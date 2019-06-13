@@ -4,4 +4,4 @@ This repository is a sandbox to explore issues in [DR-640](https://jira.nypl.org
 
 ## Viewing
 
-It's hosted on GitHub pages here: ....
+It's hosted on GitHub pages here: [https://nypl.github.io/jwplayer-a11y-experiments](https://nypl.github.io/jwplayer-a11y-experiments)
