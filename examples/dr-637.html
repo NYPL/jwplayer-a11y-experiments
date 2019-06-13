@@ -11,16 +11,29 @@
 <body>
   <h1>DR-637: Create External Controls</h1>
 
-  <div style="margin: 20px 0px;">
-    <div id="playerGoesHere">
-      
+  <div style="margin: 20px 0px; max-width: 30%;">
+    <div id="playerGoesHere"></div>
+
+    <ul id="externalPlayerControls">
+      <li><button name="button" aria-label="Play"><span>Play</span></button></li>
+      <li><button name="button" aria-label="Pause"><span>Pause</span></button></li>
+      <li><button name="button" aria-label="Forward 10 Seconds"><span>Forward 10</span></button></li>
+      <li><button name="button" aria-label="Rewind 10 Seconds"><span>Rewind 10</span></button></li>
+      <li><button name="button" aria-label="Enable Fullscreen"><span>Enable Fullscreen</span></button></li>
+      <li><span>TODO:...switch resolutions</span></li>
+      <li><span>TODO:...toggle resolutions</span></li>
+    </ul>
+
+    <div class="trackPositionContainer">
+      <span id="currentTime"></span>
+      <span id="totalTime"></span>
     </div>
   </div>
 
   <a href="https://jira.nypl.org/browse/DR-637" target='new'>On Jira</a> / <a href="../index.html">back</a>
   <script type="text/javascript">
     $(function(){
-      console.log('here is where we should make click handlers');
+      var player = jwplayer("playerGoesHere").setup({file: "../resources/video.mp4"});
     })
   </script>
 </body>
