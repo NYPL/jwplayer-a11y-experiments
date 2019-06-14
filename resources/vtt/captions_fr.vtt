@@ -1,0 +1,75 @@
+WEBVTT
+kind:captions
+lang:fr
+
+NOTE This VTT file includes a few extras:
+- Meta data at the top (lines 2 and 3)
+- The current comment block, identified with NOTE and surrounded by spaces
+- cue settings at the end of the first timestamp
+- A cue span at the start of the second cue payload
+- (in this case, a "voice span" <v> identifying the speaker)
+- A WebVTT cue settings list after the timestamp at 39.132
+- Currently AblePlayer does not support these extra features
+- but the parser needs to be able to filter them out
+-
+- Added on April 1, 2015 for testing purposes (these are both valid):
+- A cue block with no content
+- Multiple line breaks between some cue blocks
+-
+- More info in the WebVTT spec (still evolving):
+- http://dev.w3.org/html5/webvtt
+
+00:00:00.429 --> 00:00:09.165
+[ la musique ]
+
+00:00:09.165 --> 00:00:10.792
+<v Narrateur> Vous <i> voulez </ i> ces personnes.
+
+00:00:10.792 --> 00:00:13.759
+Ils <b> commandent </ b> vos produits,
+<b> inscrivez-vous </ b> pour vos services,
+
+00:00:13.759 --> 00:00:16.627
+<b> inscrivez </ b> à vos cours,
+<b> lisez </ b> vos opinions,
+
+00:00:16.627 --> 00:00:18.561
+et <b> regardez </ b> vos vidéos.
+
+00:00:18.561 --> 00:00:24.165
+Vous ne les verrez jamais, mais ils vous savent-
+via votre site web.
+
+00:00:24.165 --> 00:00:25.891
+Ou peut être pas.
+
+00:00:25.891 --> 00:00:30.396
+<c.quotable> Les visiteurs de votre site Web ne sont pas un
+masse sans visage de cliqueurs de souris identiques </ c>
+
+00:00:30.396 --> 00:00:32.363
+mais un vibrant
+communauté d'individus
+
+00:00:32.363 --> 00:00:35.297
+avec des goûts variés,
+styles et capacités.
+
+00:00:35.297 --> 00:00:36.900
+Cela inclut les personnes handicapées.
+
+00:00:39.132 --> 00:00:41.000 position:10%, aligner début:taille de départ:35%
+<v Terrill> C'est important pour
+concepteurs et développeurs Web
+
+00:00:41.000 --> 00:00:45.500
+se rendre compte que ce qu'ils voient
+actuellement sur leur ordinateur,
+
+00:00:45.500 --> 00:00:49.264
+à leur résolution, avec leur navigateur
+et leur système d'exploitation
+
+00:00:49.264 --> 00:00:52.000
+ne va pas être nécessairement
+la même chose que tout le monde voit.

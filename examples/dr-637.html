@@ -4,6 +4,7 @@
 <head>
   <meta charset="utf-8">
   <title>JwPlayer a11y Experiments: DR-637</title>
+  <link rel="stylesheet" href="../resources/css/site.css">
   <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
   <script src="https://cdn.jwplayer.com/libraries/KRF3T2Kr.js"></script>
 </head>
@@ -11,29 +12,179 @@
 <body>
   <h1>DR-637: Create External Controls</h1>
 
-  <div style="margin: 20px 0px; max-width: 30%;">
+  <div style="margin: 20px 0px; max-width: 40%;">
     <div id="playerGoesHere"></div>
 
-    <ul id="externalPlayerControls">
-      <li><button name="button" aria-label="Play"><span>Play</span></button></li>
-      <li><button name="button" aria-label="Pause"><span>Pause</span></button></li>
-      <li><button name="button" aria-label="Forward 10 Seconds"><span>Forward 10</span></button></li>
-      <li><button name="button" aria-label="Rewind 10 Seconds"><span>Rewind 10</span></button></li>
-      <li><button name="button" aria-label="Enable Fullscreen"><span>Enable Fullscreen</span></button></li>
-      <li><span>TODO:...switch resolutions</span></li>
-      <li><span>TODO:...toggle resolutions</span></li>
-    </ul>
-
     <div class="trackPositionContainer">
-      <span id="currentTime"></span>
-      <span id="totalTime"></span>
+      <span id="currentTime"></span> / <span id="totalTime"></span>
     </div>
+    <br>
+    <ul id="externalPlayerControls">
+      <li><button id="playButton" name="button" aria-label="Play"><span>Play</span></button></li>
+      <li><button id="pauseButton" name="button" aria-label="Pause"><span>Pause</span></button></li>
+      <li><button id="fastForwardButton" name="button" aria-label="Forward 10 Seconds"><span>Forward 10</span></button></li>
+      <li><button id="rewindButton" name="button" aria-label="Rewind 10 Seconds"><span>Rewind 10</span></button></li>
+      <li><button id="muteButton" name="button" aria-label="Mute"><span>Mute</span></button></li>
+      <li><button id="volumeUpButton" name="button" aria-label="Volume Up"><span>Volume Up</span></button></li>
+      <li><button id="volumeDownButton" name="button" aria-label="Volume Down"><span>VolumeDown</span></button></li>
+      <li><button id="fullScreenButton" name="button" aria-label="Enable Fullscreen"><span>Enable Fullscreen</span></button></li>
+      <li>
+        <select id="videoSelectionDropdown" aria-label="Video Quality">
+          <option value="High Quality">High Quality</option>
+          <option value="Low Quality">Low Quality</option>
+      </select>
+      </li>
+
+      <li>
+        <select id="captionsSelectionDropdown" aria-label="Caption Language">
+          <option value="none">No Captions</option>
+          <option value="English">English</option>
+          <option value="French">French</option>
+        </select>
+      </li>
+
+    </ul>
   </div>
 
   <a href="https://jira.nypl.org/browse/DR-637" target='new'>On Jira</a> / <a href="../index.html">back</a>
   <script type="text/javascript">
-    $(function(){
-      var player = jwplayer("playerGoesHere").setup({file: "../resources/video.mp4"});
+    var player;
+
+    $(function() {
+
+      function toHHMMSS(seconds) {
+        var sec_num = parseInt(seconds, 10); // don't forget the second param
+        var hours = Math.floor(sec_num / 3600);
+        var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+        var seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+        if (hours < 10) {
+          hours = "0" + hours;
+        }
+        if (minutes < 10) {
+          minutes = "0" + minutes;
+        }
+        if (seconds < 10) {
+          seconds = "0" + seconds;
+        }
+        return hours + ':' + minutes + ':' + seconds;
+      }
+
+      function syncDropdowntoQuality() {
+        var curentQuality = player.getQualityLevels()[player.getCurrentQuality()].label;
+        if (curentQuality) {
+          $('#videoSelectionDropdown').val(curentQuality);
+        }
+      }
+
+      function playVideoVersion(versionString) {
+        var indexOfDesired = player.getQualityLevels().findIndex(function(qualityObject) {
+          return (qualityObject.label == versionString);
+        })
+        if (indexOfDesired != -1) {
+          jwplayer().setCurrentQuality(indexOfDesired)
+        }
+      };
+
+      function updateTime(player) {
+        $('#currentTime').html(toHHMMSS(player.getPosition()));
+      };
+
+      player = jwplayer("playerGoesHere").setup({
+        sources: [{
+          label: 'High Quality',
+          file: "../resources/video.mp4",
+          default: true
+        }, {
+          label: 'Low Quality',
+          file: "../resources/video.mp4"
+        }],
+        tracks: [{
+            label: 'English',
+            kind: 'captions',
+            file: '../resources/vtt/captions_en.vtt',
+            default: true
+          },
+          {
+            label: 'French',
+            kind: 'captions',
+            file: '../resources/vtt/captions_fr.vtt',
+            default: true
+          }
+        ]
+      });
+
+      // Durration Stuff
+      player.on('time', function() {
+        updateTime(player);
+        if ($('#totalTime').html() == '') {
+          $('#totalTime').html(toHHMMSS(player.getDuration()));
+        };
+      });
+
+      // playButton
+      $('#playButton').on('click', function(e) {
+        var state = player.getState();
+        if (state == 'playing') {
+          player.pause();
+        } else {
+          player.play();
+        }
+      });
+
+      // pauseButton
+      $('#pauseButton').on('click', (function() {
+        player.pause();
+      }));
+
+      // fullScreenButton
+      $('#fullScreenButton').on('click', function() {
+        player.setFullscreen(true);
+      })
+
+      // Fast Forward & Rewind
+      $('#fastForwardButton').on('click', function() {
+        var newPosition = parseInt(player.getPosition() + 10);
+        player.seek(newPosition);
+      })
+
+      $('#rewindButton').on('click', function() {
+        var newPosition = parseInt(player.getPosition() - 10);
+        player.seek(newPosition);
+      })
+
+      // Video Select
+      $('#videoSelectionDropdown').on('change', function(event) {
+        var selectedOption = $(event.target).find('option:selected')[0];
+        playVideoVersion(selectedOption.value);
+      })
+
+      player.on('levelsChanged', syncDropdowntoQuality);
+
+      // Closed Captions
+      $('#captionsSelectionDropdown').on('change', function(event) {
+        var selectedOption = $(event.target).find('option:selected')[0];
+        var indexOfDesired = player.getCaptionsList().findIndex(function(caption) {
+          return caption.label == selectedOption.value
+        })
+        if (indexOfDesired != -1) {
+          player.setCurrentCaptions(indexOfDesired);
+        }
+      });
+
+      // mute
+      $('#muteButton').on('click', function() {
+        player.setMute(!player.getMute());
+      });
+
+      $('#volumeUpButton').on('click', function() {
+        player.setVolume(jwplayer().getVolume() + 10);
+      });
+
+      $('#volumeDownButton').on('click', function() {
+        player.setVolume(jwplayer().getVolume() - 10);
+      });
+
     })
   </script>
 </body>

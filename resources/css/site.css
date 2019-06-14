@@ -1,0 +1,10 @@
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: #efefef;
+  margin: 20px;
+}
+
+ul {
+  block !important;
+  list-style: none !important;
+}
