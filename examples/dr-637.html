@@ -167,8 +167,11 @@
         var indexOfDesired = player.getCaptionsList().findIndex(function(caption) {
           return caption.label == selectedOption.value
         })
+
         if (indexOfDesired != -1) {
           player.setCurrentCaptions(indexOfDesired);
+        } else {
+          player.setCurrentCaptions(0);
         }
       });
 
