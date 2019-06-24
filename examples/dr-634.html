@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="../resources/css/site.css">
   <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
   <script src="https://cdn.jwplayer.com/libraries/KRF3T2Kr.js"></script>
-  <script src="/resources/javascript/vtt.js"></script>
+  <script src="../resources/javascript/vtt.js"></script>
 </head>
 
 <body>
@@ -19,6 +19,12 @@
   </div>
 
   <script type="text/javascript">
+
+    var descriptionVTT = null;
+    var parser = new WebVTT.Parser(window, WebVTT.StringDecoder());
+    var cues = [];
+    var regions = [];
+    var ranges = []
 
 
     $(function() {
@@ -46,47 +52,37 @@
         ]
       });
 
-      // Durration Stuff
-      player.on('time', function() {
-        cues.some(function(cue) {
-          var currentTime = player.getCurrentTime();
-          var currentText = $('#descriptionBox').text()
-          if (currentTime >= cue.startTime && currentTime <= cue.endTime && currentText != cue.text) {
-            $('#descriptionBox').text(cue.text);
-            console.log('yup');
-            return true;
-          } else {
-            console.log('nope')
-          }
+      parser.oncue = function(cue) {
+        cues.push(cue);
+      };
+
+      parser.onregion = function(region) {
+        regions.push(region);
+      }
+
+      $.get("../resources/vtt/description.vtt").done(function(response) {
+        descriptionVTT = response;
+        parser.parse(descriptionVTT);
+        parser.flush();
+
+        // Durration Stuff
+        player.on('time', function() {
+          cues.some(function(cue) {
+            var currentTime = player.getCurrentTime();
+            var currentText = $('#descriptionBox').text()
+            if (currentTime >= cue.startTime && currentTime <= cue.endTime && currentText != cue.text) {
+              $('#descriptionBox').text(cue.text);
+              console.log('lets update')
+              return true;
+            } else {
+              console.log('dont update')
+            }
+          });
         });
-      });
+
+      })
+
     });
-
-    // This is console.logging for now, just for development ,but I should use it to change the content.
-    function updateAriaContent() {
-
-    };
-
-    var descriptionVTT = null;
-    var parser = new WebVTT.Parser(window, WebVTT.StringDecoder());
-    var cues = [];
-    var regions = [];
-    var ranges = []
-
-    parser.oncue = function(cue) {
-      cues.push(cue);
-    };
-
-    parser.onregion = function(region) {
-      regions.push(region);
-    }
-
-    $.get("/resources/vtt/description.vtt").done(function(response) {
-      descriptionVTT = response;
-      parser.parse(descriptionVTT);
-      parser.flush();
-
-    })
   </script>
 </body>
 
