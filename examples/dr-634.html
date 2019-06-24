@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>JwPlayer a11y Experiments: DR-634</title>
+  <link rel="stylesheet" href="../resources/css/site.css">
+  <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jwplayer.com/libraries/KRF3T2Kr.js"></script>
+  <script src="/resources/javascript/vtt.js"></script>
+</head>
+
+<body>
+  <h1>DR-634: Aria WebVTT Audio Description</h1>
+
+  <div style="margin: 20px 0px; max-width: 40%;">
+    <span role='alert' id="descriptionBox"></span>
+    <div id="playerGoesHere"></div>
+  </div>
+
+  <script type="text/javascript">
+
+
+    $(function() {
+      player = jwplayer("playerGoesHere").setup({
+        sources: [{
+          label: 'High Quality',
+          file: "../resources/video.mp4",
+          default: true
+        }, {
+          label: 'Low Quality',
+          file: "../resources/video-low.mp4"
+        }],
+        tracks: [{
+            label: 'English',
+            kind: 'captions',
+            file: '../resources/vtt/captions_en.vtt',
+            default: true
+          },
+          {
+            label: 'French',
+            kind: 'captions',
+            file: '../resources/vtt/captions_fr.vtt',
+            default: true
+          }
+        ]
+      });
+
+      // Durration Stuff
+      player.on('time', function() {
+        cues.some(function(cue) {
+          var currentTime = player.getCurrentTime();
+          var currentText = $('#descriptionBox').text()
+          if (currentTime >= cue.startTime && currentTime <= cue.endTime && currentText != cue.text) {
+            $('#descriptionBox').text(cue.text);
+            console.log('yup');
+            return true;
+          } else {
+            console.log('nope')
+          }
+        });
+      });
+    });
+
+    // This is console.logging for now, just for development ,but I should use it to change the content.
+    function updateAriaContent() {
+
+    };
+
+    var descriptionVTT = null;
+    var parser = new WebVTT.Parser(window, WebVTT.StringDecoder());
+    var cues = [];
+    var regions = [];
+    var ranges = []
+
+    parser.oncue = function(cue) {
+      cues.push(cue);
+    };
+
+    parser.onregion = function(region) {
+      regions.push(region);
+    }
+
+    $.get("/resources/vtt/description.vtt").done(function(response) {
+      descriptionVTT = response;
+      parser.parse(descriptionVTT);
+      parser.flush();
+
+    })
+  </script>
+</body>
+
+</html>
